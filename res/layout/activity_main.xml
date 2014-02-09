@@ -34,12 +34,36 @@
             android:text="Guess" 
             android:layout_weight="1.0" /> 
     </LinearLayout>
-
+	<LinearLayout 
+	    android:id="@+id/AFLayout"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent" android:layout_height="wrap_content" 
+        android:layout_below="@+id/Guesslayout"></LinearLayout>
+	<LinearLayout 
+	    android:id="@+id/GLLayout"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent" android:layout_height="wrap_content" 
+        android:layout_below="@+id/AFLayout"></LinearLayout>
+	<LinearLayout 
+	    android:id="@+id/MRLayout"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent" android:layout_height="wrap_content" 
+        android:layout_below="@+id/GLLayout"></LinearLayout>
+	<LinearLayout 
+	    android:id="@+id/SXLayout"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent" android:layout_height="wrap_content" 
+        android:layout_below="@+id/MRLayout"></LinearLayout>
+	<LinearLayout 
+	    android:id="@+id/YZLayout"
+        android:orientation="horizontal" 
+        android:layout_width="fill_parent" android:layout_height="wrap_content" 
+        android:layout_below="@+id/SXLayout"></LinearLayout>
     <TextView
         android:id="@+id/GuessList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Guesslayout"
+        android:layout_below="@+id/YZLayout"
         android:layout_centerHorizontal="true"
         android:ems="10" />
 
