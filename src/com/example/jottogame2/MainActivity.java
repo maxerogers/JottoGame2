@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.SQLException;
@@ -16,6 +14,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
 		addAZButtons();
 		newGame();
 		addGuessListener();
+		help();
 	}
 
 	private void addAZButtons() {
@@ -113,61 +114,70 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	private String inCommon(String wordA, String wordB) {
+		String common = "";
+		for(int i=0;i<wordA.length();i++){  
+		    for(int j=0;j<wordB.length();j++){  
+		        if(wordA.charAt(i)==wordB.charAt(j)){  
+		            common += wordA.charAt(i);  
+		            break;
+		        }  
+		    }  
+		} 
+		return common;
+	}
+	private void makeAGuess(){
+		EditText et01 = (EditText) findViewById(R.id.EditText01);
+		String input = et01.getText().toString();
+		//make sure it is a meaningful and valid guess
+		if (input != null && !input.isEmpty() && input.length() == 5){
+			//Log.i(TAG, "Check if valid guess");
+			if(db.isValidGuess(input))
+			{
+				guesses.add(input);
+				//Log.i(TAG, guesses.get(guesses.size()-1));
+				TextView guessList = (TextView) findViewById(R.id.GuessList);
+				String temp = guessList.getText().toString();
+				guessList.setText(input+": ("+inCommon(answer, input).length()+") \n"+temp);
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(et01.getWindowToken(), 0);
+				if(input.equals(answer))
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(this.getApplicationContext());
+					builder.setMessage("Congrats!\nyou just won with "+guesses.size()+" guesses.\n");
+					builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							newGame();
+						}
+					});
+					AlertDialog dialog = builder.create();
+					dialog.show();
+				}
+				recolorLetter();
+			}else{
+				//Log.i(TAG, "NOT a valid guess");
+				Toast.makeText(getApplicationContext(), input+" is not a valid guess", Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
 	private void addGuessListener() {
 		Button btnG = (Button) findViewById(R.id.Guess);
 		btnG.setBackgroundResource(android.R.drawable.btn_default);
+		EditText et01 = (EditText) findViewById(R.id.EditText01);
+		et01.setOnEditorActionListener(new OnEditorActionListener() {                     
+		    @Override
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        makeAGuess();
+		        return true;
+		    }
+		});
 		btnG.setOnClickListener(new OnClickListener(){
 			
 			@Override
 			public void onClick(View v) {
-				EditText et01 = (EditText) findViewById(R.id.EditText01);
-				String input = et01.getText().toString();
-				//make sure it is a meaningful and valid guess
-				if (input != null && !input.isEmpty() && input.length() == 5){
-					//Log.i(TAG, "Check if valid guess");
-					if(db.isValidGuess(input))
-					{
-						guesses.add(input);
-						//Log.i(TAG, guesses.get(guesses.size()-1));
-						TextView guessList = (TextView) findViewById(R.id.GuessList);
-						String temp = guessList.getText().toString();
-						guessList.setText(input+": ("+inCommon(answer, input).length()+") \n"+temp);
-						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.hideSoftInputFromWindow(et01.getWindowToken(), 0);
-						if(input.equals(answer))
-						{
-							AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-							builder.setMessage("Congrats!\nyou just won with "+guesses.size()+" guesses.\n");
-							builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									newGame();
-								}
-							});
-							AlertDialog dialog = builder.create();
-							dialog.show();
-						}
-						recolorLetter();
-					}else{
-						//Log.i(TAG, "NOT a valid guess");
-						Toast.makeText(getApplicationContext(), input+" is not a valid guess", Toast.LENGTH_SHORT).show();
-					}
-				}
+				makeAGuess();
 			}
-
-			private String inCommon(String wordA, String wordB) {
-				String common = "";
-				for(int i=0;i<wordA.length();i++){  
-				    for(int j=0;j<wordB.length();j++){  
-				        if(wordA.charAt(i)==wordB.charAt(j)){  
-				            common += wordA.charAt(i);  
-				            break;
-				        }  
-				    }  
-				} 
-				return common;
-			}
-			
 		});
 	}
 	
@@ -235,6 +245,14 @@ public class MainActivity extends Activity {
 			}
 		}
 		guessList.setText(str);
+	}
+	
+	private void help(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Rules to the Game \n Jotto is a word guessing game where a five letter word is selected at random. Then you after each guess the computer will tell you have many letters you have in common with the answer. To help you out I have added a series of buttons to color code letters to keep track what letters are in and which are out");
+		builder.setPositiveButton("Close", null);
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 	
 	@Override
