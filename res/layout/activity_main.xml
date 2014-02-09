@@ -11,6 +11,8 @@
     <EditText
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content"
+        android:inputType="text"
+    	android:imeOptions="actionDone"
         android:id="@+id/EditText01" /> 
 
     <LinearLayout 
@@ -24,7 +26,7 @@
         android:layout_below="@+id/EditText01"> 
 
         <Button 
-            android:id="@+id/Giveup" 
+            android:id="@+id/Giveup"
             android:layout_width="0.0dip" android:layout_height="fill_parent" 
             android:text="Give Up" 
             android:layout_weight="1.0" /> 
@@ -59,12 +61,15 @@
         android:orientation="horizontal" 
         android:layout_width="fill_parent" android:layout_height="wrap_content" 
         android:layout_below="@+id/SXLayout"></LinearLayout>
-    <TextView
-        android:id="@+id/GuessList"
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/YZLayout"
-        android:layout_centerHorizontal="true"
+        android:layout_centerHorizontal="true">
+        <TextView
+        android:id="@+id/GuessList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:ems="10" />
-
+    </ScrollView>
 </RelativeLayout>

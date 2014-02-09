@@ -5,8 +5,11 @@ import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.SQLException;
 import android.graphics.Color;
 import android.text.Spannable;
@@ -37,7 +40,7 @@ public class MainActivity extends Activity {
 		loadData();
 		newGameListener();
 		abc = new int[26];
-		for(int i=0;i<abc.length;i++){	abc[i] = 1; }
+		for(int i=0;i<abc.length;i++){	abc[i] = 2; }
 		addAZButtons();
 		newGame();
 		addGuessListener();
@@ -50,16 +53,15 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				Button btn = (Button) v;
 				char c = btn.getText().toString().charAt(0);
-				Log.i(TAG,""+c);
-				int x = c - 'A';
+				int x = c - 'A';;
 				if(abc[x] > 1){
-					btn.setBackgroundResource(android.R.drawable.btn_default);
+					btn.setBackgroundColor(Color.GREEN);
 					abc[x] = 0;
 				}else if(abc[x] < 1){
 					btn.setBackgroundColor(Color.RED);
 					abc[x] = 1;
 				}else{
-					btn.setBackgroundColor(Color.GREEN);
+					btn.setBackgroundResource(android.R.drawable.btn_default);
 					abc[x] = 2;
 				}
 				recolorLetter();
@@ -134,7 +136,16 @@ public class MainActivity extends Activity {
 						imm.hideSoftInputFromWindow(et01.getWindowToken(), 0);
 						if(input.equals(answer))
 						{
-							
+							AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+							builder.setMessage("Congrats!\nyou just won with "+guesses.size()+" guesses.\n");
+							builder.setPositiveButton("New Game", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface arg0, int arg1) {
+									newGame();
+								}
+							});
+							AlertDialog dialog = builder.create();
+							dialog.show();
 						}
 						recolorLetter();
 					}else{
